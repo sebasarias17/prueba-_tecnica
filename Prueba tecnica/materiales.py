@@ -1,71 +1,90 @@
 class Material:
-        nombre = ''
-        codigo = int()
-        valor = int()
-        cantidad = int()
+    def __init__(self, nombre, codigo, valor, cantidad):
+        self.nombre = nombre
+        self.codigo = codigo
+        self.valor = valor
+        self.cantidad = cantidad
 
-class Producto(Material):
-        nombre = int()
-        codigo = int()
-        productos = [Material]
+    def editar(self, nombre=None, valor=None, cantidad=None):
+        if nombre:
+            self.nombre = nombre
+        if valor is not None:
+            self.valor = valor
+        if cantidad is not None:
+            self.cantidad = cantidad
 
-        def calc_valor(self):
-            arr_productos = self.productos
-            suma = sum(arr_productos)
-            return suma
+class Producto:
+    def __init__(self, nombre, codigo):
+        self.nombre = nombre
+        self.codigo = codigo
+        self.productos = []
 
-while True:
-    print("Ingrese una opcion:")
-    print("1. crear un producto con materiales")
-    print("2. imprimir productos y materiales")
-    print("4. modificar productos")
-    print("5. salir")
+    def agregar_material(self, material):
+        self.productos.append(material)
 
-    opcion = int(input())
-    if opcion == 1:
-            producto = Producto()
-            print("Ingrese el nombre del producto")
-            producto.nombre = input('')
-            print("Ingrese el codigo del producto")
-            producto.codigo = int(input())
+    def calcular_valor(self):
+        return sum(item.valor * item.cantidad if isinstance(item, Material) else item.calcular_valor() for item in self.productos)
 
-            print("INGRESE LOS MATERIALES DEL PRODUCTO")
+    def editar(self, nombre=None):
+        if nombre:
+            self.nombre = nombre
 
-            material = Material()
-            print("Ingrese el nombre del material")
-            material.nombre = (input())
-            print("Ingrese el codigo del material")
-            material.codigo = int(input())
-            print("Ingrese el vaor del material")
-            material.valor = int(input())
-            print("Ingrese la cantidad del material")
-            material.cantidad = int(input())
-            producto.productos = [material.nombre]
-            
-            print("Se ha creado el producto: ", producto.nombre, " Con los materiales", material.nombre)
-    if opcion == 3:
-           print(producto.nombre)
-           print(producto.productos)
-    if opcion == 4:
-            producto = Producto()
-            print("Ingrese el nuevo nombre del producto")
-            producto.nombre = input('')
-            print("Ingrese el nuevo codigo del producto")
-            producto.codigo = int(input())
+materiales = {}
+productos = {}
 
-            print("INGRESE LOS NUEVOS MATERIALES DEL PRODUCTO")
+def agregar_material():
+    nombre = input("Nombre del material: ")
+    codigo = input("Código del material: ")
+    valor = float(input("Valor del material: "))
+    cantidad = int(input("Cantidad del material: "))
+    materiales[codigo] = Material(nombre, codigo, valor, cantidad)
+    print("Material agregado con éxito.")
 
-            material = Material()
-            print("Ingrese el nuevo nombre del material")
-            material.nombre = (input())
-            print("Ingrese el nuevo codigo del material")
-            material.codigo = int(input())
-            print("Ingrese el nuevo valor del material")
-            material.valor = int(input())
-            print("Ingrese la nueva cantidad del material")
-            material.cantidad = int(input())
-            producto.productos = [material.nombre]
-            
-            print("Se ha modificado el producto: ", producto.nombre, " Con los materiales", material.nombre)
-    if opcion == 5:
-           break
+def agregar_producto():
+    nombre = input("Nombre del producto: ")
+    codigo = input("Código del producto: ")
+    producto = Producto(nombre, codigo)
+    while True:
+        cod_material = input("Ingrese el código del material (deje en blanco para terminar): ")
+        if not cod_material:
+            break
+        if cod_material in materiales:
+            producto.agregar_material(materiales[cod_material])
+        else:
+            print("Material no encontrado.")
+    productos[codigo] = producto
+    print("Producto agregado con éxito.")
+
+def ver_materiales():
+    for material in materiales.values():
+        print(f"Nombre: {material.nombre}, Código: {material.codigo}, Valor: {material.valor}, Cantidad: {material.cantidad}")
+
+def ver_productos():
+    for producto in productos.values():
+        print(f"Nombre: {producto.nombre}, Código: {producto.codigo}, Valor total: {producto.calcular_valor()}")
+
+def menu():
+    while True:
+        print("\nAdministrador de Materiales/Productos")
+        print("1. Agregar Material")
+        print("2. Agregar Producto")
+        print("3. Ver Materiales")
+        print("4. Ver Productos")
+        print("5. Salir")
+        opcion = input("Seleccione una opción: ")
+
+        if opcion == '1':
+            agregar_material()
+        elif opcion == '2':
+            agregar_producto()
+        elif opcion == '3':
+            ver_materiales()
+        elif opcion == '4':
+            ver_productos()
+        elif opcion == '5':
+            print("Saliendo del programa...")
+            break
+        else:
+            print("Opción no válida. Por favor, intente de nuevo.")
+
+menu()
